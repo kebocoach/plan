@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan 90 jours Kebo Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* Idée : une page de plan en noir, blanc froid et azur, construite comme la carte "Ta semaine" de la vidéo. Le tableau de la semaine ouvre la page, le calculateur et la liste de course servent de repères actifs. */
+:root{
+  --bg:#0B0F17;
+  --surface:#111826;
+  --surface-2:#161F31;
+  --line:#222E45;
+  --text:#F4F7FA;
+  --muted:#9AA7BD;
+  --azur:#1E8FFF;
+  --azur-ink:#06101F;
+  --font-display:"Montserrat","Helvetica Neue",Arial,sans-serif;
+  --font-body:"DM Sans","Helvetica Neue",Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:17px;line-height:1.6;
+  background-image:linear-gradient(rgba(244,247,250,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(244,247,250,.035) 1px,transparent 1px);
+  background-size:48px 48px;
+  -webkit-text-size-adjust:100%;
+}
+a{color:var(--azur)}
+:focus-visible{outline:3px solid var(--azur);outline-offset:3px;border-radius:6px}
+h1,h2,h3{font-family:var(--font-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(2.1rem,7.4vw,3.9rem);line-height:1.04;font-weight:900;text-transform:uppercase}
+h2{font-size:clamp(1.6rem,5vw,2.4rem);line-height:1.1;font-weight:800;text-transform:uppercase}
+h3{font-size:1.1rem;line-height:1.25;font-weight:800;text-transform:uppercase;letter-spacing:.01em}
+p{margin:0}
+.wrap{width:100%;max-width:1040px;margin:0 auto;padding:0 20px}
+.eyebrow{font-family:var(--font-display);font-weight:700;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--azur)}
+.lead{color:var(--muted);font-size:1.12rem;max-width:60ch}
+.tabular{font-variant-numeric:tabular-nums}
+
+/* barre haute */
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 0}
+.brand{font-family:var(--font-display);font-weight:900;letter-spacing:.06em;text-transform:uppercase;font-size:.95rem}
+.brand span{color:var(--azur)}
+.nav{display:none;gap:22px;font-size:.92rem}
+.nav a{color:var(--muted);text-decoration:none;font-weight:500}
+.nav a:hover{color:var(--text)}
+@media (min-width:820px){.nav{display:flex}}
+
+/* hero */
+.hero{padding:28px 0 24px;display:grid;gap:32px}
+.hero-copy{display:grid;gap:20px;align-content:start;grid-area:copy}
+.hero .week{grid-area:week}
+.hero .menu{grid-area:menu}
+.hero{grid-template-areas:"copy" "menu" "week"}
+.hero-copy h1 em{font-style:normal;color:var(--azur)}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 24px;border-radius:12px;font-family:var(--font-display);font-weight:800;font-size:.95rem;letter-spacing:.03em;text-transform:uppercase;text-decoration:none;border:2px solid var(--azur)}
+.btn-primary{background:var(--azur);color:var(--azur-ink)}
+.btn-primary:hover{background:#4BA6FF;border-color:#4BA6FF}
+.btn-ghost{background:transparent;color:var(--text);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--azur)}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:8px}
+.fact{background:var(--surface);padding:14px 16px;display:grid;gap:2px}
+.fact b{font-family:var(--font-display);font-weight:900;font-size:1.5rem;line-height:1.1}
+.fact span{color:var(--muted);font-size:.86rem}
+@media (max-width:899px){.cta-row{display:none}.hero-copy{gap:16px}}
+@media (min-width:900px){
+  .hero{grid-template-columns:1.05fr .95fr;grid-template-areas:"copy week" "menu menu";align-items:center;gap:56px;padding-top:40px}
+  .facts{grid-template-columns:repeat(4,1fr)}
+}
+
+/* tableau de la semaine */
+.week{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px 18px;display:grid;gap:10px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.week-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+.week-head h2{font-size:1.15rem}
+.week-head small{color:var(--muted);font-size:.82rem}
+.day{display:grid;grid-template-columns:3.4rem 1fr auto;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.day .d{font-family:var(--font-display);font-weight:800;font-size:.8rem;letter-spacing:.08em;color:var(--muted)}
+.day .n{font-family:var(--font-display);font-weight:800;font-size:.9rem;text-transform:uppercase;letter-spacing:.01em}
+.day .t{font-size:.85rem;color:var(--muted);text-align:right}
+.day.on{background:var(--azur);border-color:var(--azur);color:var(--azur-ink)}
+.day.on .d,.day.on .t{color:var(--azur-ink)}
+.day.rest{background:transparent;border-style:dashed}
+.day.rest .n{color:var(--muted)}
+.week-note{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:.84rem;color:var(--muted)}
+.key{display:inline-flex;align-items:center;gap:8px}
+.key i{width:14px;height:14px;border-radius:4px;background:var(--azur);display:inline-block}
+.key i.o{background:var(--surface-2);border:1px solid var(--line)}
+
+/* sections */
+.panel{padding:6px 0 40px;scroll-margin-top:76px}
+.sticky{position:sticky;top:0;z-index:20;margin:0 -20px 18px;padding:10px 20px;background:rgba(11,15,23,.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.sticky[hidden]{display:none}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent);padding-right:24px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;scroll-snap-align:start;appearance:none;font-family:var(--font-display);font-weight:800;font-size:.8rem;letter-spacing:.02em;text-transform:uppercase;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;white-space:nowrap}
+.chip:hover{border-color:var(--azur)}
+.chip[aria-current="true"]{background:var(--azur);border-color:var(--azur);color:var(--azur-ink)}
+.panel[hidden]{display:none}
+.panel:focus-visible{outline-offset:6px}
+.contact{padding:8px 0 56px}
+.menu{padding:4px 0 0}
+.menu-head{display:grid;gap:6px;margin-bottom:18px}
+.menu-head h2{font-size:clamp(1.4rem,4.4vw,2rem)}
+.menu-head p{color:var(--muted);font-size:.98rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:10px}
+.tile{appearance:none;font:inherit;text-align:left;cursor:pointer;display:grid;gap:3px;align-content:center;min-height:76px;padding:12px 14px;border-radius:14px;background:var(--surface);color:var(--text);border:2px solid var(--line)}
+.tile .tl{font-family:var(--font-display);font-weight:800;font-size:.92rem;letter-spacing:.01em;text-transform:uppercase;line-height:1.15}
+.tile .ts{font-size:.8rem;color:var(--muted);line-height:1.25}
+.tile:hover{border-color:var(--azur)}
+.tile[aria-selected="true"]{background:var(--azur);border-color:var(--azur);color:var(--azur-ink)}
+.tile[aria-selected="true"] .ts{color:var(--azur-ink)}
+@media (max-width:600px){.tiles{grid-template-columns:1fr 1fr}.tiles .tile:last-child:nth-child(odd){grid-column:1/-1}}
+.panel-foot{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
+.panel-foot .btn{min-height:46px;padding:0 18px;font-size:.85rem;cursor:pointer;font-family:var(--font-display);background:transparent;color:var(--text);border-color:var(--line)}
+.panel-foot .btn:hover{border-color:var(--azur)}
+.panel-foot .btn.next{background:var(--azur);color:var(--azur-ink);border-color:var(--azur)}
+.sec-head{display:grid;gap:14px;margin-bottom:26px}
+.grid{display:grid;gap:16px}
+@media (min-width:760px){.grid.c3{grid-template-columns:repeat(3,1fr)}.grid.c2{grid-template-columns:repeat(2,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:grid;gap:14px;align-content:start}
+.num{font-family:var(--font-display);font-weight:900;font-size:2.6rem;line-height:1;color:var(--azur)}
+.card p{color:var(--muted)}
+
+/* séances */
+.session .tag{font-family:var(--font-display);font-weight:700;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--azur)}
+.session .main{display:grid;gap:4px;padding:14px 16px;border-radius:12px;background:var(--azur);color:var(--azur-ink)}
+.session .main b{font-family:var(--font-display);font-weight:900;font-size:1.25rem;text-transform:uppercase}
+.session .main span{font-weight:500;font-size:.95rem}
+.session ol{margin:0;padding:0;list-style:none;display:grid;gap:8px;counter-reset:x}
+.session li{counter-increment:x;display:grid;grid-template-columns:1.6rem 1fr;gap:8px;align-items:baseline;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.session li:last-child{border-bottom:0;padding-bottom:0}
+.session li::before{content:counter(x);font-family:var(--font-display);font-weight:800;color:var(--azur)}
+.session .reps{color:var(--muted);font-size:.9rem}
+.rules{display:grid;gap:14px;margin-top:18px}
+.rule{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;padding:20px 22px;border-radius:16px;background:var(--surface-2);border:1px solid var(--line)}
+.rule b{font-family:var(--font-display);font-weight:900;font-size:1.5rem;color:var(--azur);line-height:1.1;min-width:3.2rem}
+.rule p{color:var(--text)}
+.rule p span{color:var(--muted)}
+
+/* cardio */
+.big{font-family:var(--font-display);font-weight:900;font-size:clamp(2.2rem,8vw,3.2rem);line-height:1;text-transform:uppercase}
+.big em{font-style:normal;color:var(--azur)}
+.pill{display:inline-flex;gap:8px;flex-wrap:wrap}
+.pill span{padding:6px 12px;border-radius:999px;border:1px solid var(--line);font-size:.9rem;color:var(--text);background:var(--surface-2)}
+.interval{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.interval div{padding:14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);display:grid;gap:2px}
+.interval b{font-family:var(--font-display);font-weight:900;font-size:1.9rem;line-height:1}
+.interval div:first-child b{color:var(--azur)}
+.interval span{color:var(--muted);font-size:.88rem}
+
+/* calculateur */
+.calc{display:grid;gap:22px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px 22px}
+@media (min-width:860px){.calc{grid-template-columns:.9fr 1.1fr;padding:34px;gap:40px}}
+.fields{display:grid;gap:18px;align-content:start}
+label{display:grid;gap:8px;font-weight:700;font-size:.95rem}
+label small{color:var(--muted);font-weight:400;font-size:.85rem}
+input[type=number],select{width:100%;min-height:56px;padding:0 16px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--text);font-family:var(--font-display);font-weight:800;font-size:1.4rem}
+input[type=number]:focus,select:focus{border-color:var(--azur);outline:none}
+select{font-size:1.1rem;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 22px) 50%,calc(100% - 16px) 50%;background-size:6px 6px,6px 6px;background-repeat:no-repeat}
+.hint{font-size:.88rem;color:var(--muted)}
+.out{display:grid;gap:12px;align-content:start}
+.res{padding:20px;border-radius:16px;background:var(--surface-2);border:1px solid var(--line);display:grid;gap:4px}
+.res .k{font-family:var(--font-display);font-weight:700;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.res .v{font-family:var(--font-display);font-weight:900;font-size:clamp(2.4rem,9vw,3.4rem);line-height:1;font-variant-numeric:tabular-nums}
+.res .v small{font-size:1.05rem;font-weight:700;color:var(--muted);margin-left:6px}
+.res.main{background:var(--azur);border-color:var(--azur);color:var(--azur-ink)}
+.res.main .k,.res.main .v small{color:var(--azur-ink)}
+.res .f{font-size:.88rem;color:var(--muted)}
+.res.main .f{color:var(--azur-ink)}
+.two{display:grid;gap:12px}
+@media (min-width:520px){.two{grid-template-columns:1fr 1fr}}
+.calc-note{grid-column:1/-1;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:16px}
+.err{color:#FFB547;font-weight:700}
+
+/* liste de course */
+.shop{display:grid;gap:16px}
+@media (min-width:700px){.shop{grid-template-columns:repeat(2,1fr)}}
+.shop fieldset{margin:0;border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:20px 22px;display:grid;gap:4px}
+.shop legend{padding:0 8px;margin-left:-8px;font-family:var(--font-display);font-weight:800;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--azur)}
+.chk{display:flex;align-items:center;gap:14px;min-height:46px;font-weight:500;cursor:pointer;font-size:1.02rem}
+.chk input{appearance:none;width:24px;height:24px;border-radius:7px;border:2px solid var(--line);background:var(--bg);display:grid;place-content:center;cursor:pointer;flex:none;margin:0}
+.chk input::after{content:"";width:12px;height:7px;border-left:3px solid var(--azur-ink);border-bottom:3px solid var(--azur-ink);transform:rotate(-45deg) translate(1px,-1px);opacity:0}
+.chk input:checked{background:var(--azur);border-color:var(--azur)}
+.chk input:checked::after{opacity:1}
+.chk input:checked + span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--azur)}
+.shop-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-top:18px;color:var(--muted);font-size:.92rem}
+.linkbtn{background:none;border:0;color:var(--azur);font:inherit;font-weight:700;cursor:pointer;padding:8px 0;text-decoration:underline;text-underline-offset:3px}
+
+/* 90 jours */
+.track{display:grid;gap:0;position:relative;margin:0;padding:0;list-style:none}
+.track li{display:grid;grid-template-columns:5.4rem 1fr;gap:18px;padding:0 0 26px;position:relative}
+.track li::before{content:"";position:absolute;left:2.55rem;top:34px;bottom:-4px;width:2px;background:var(--line)}
+.track li:last-child::before{display:none}
+.track .day-n{font-family:var(--font-display);font-weight:900;font-size:.95rem;text-transform:uppercase;display:grid;gap:2px;justify-items:start}
+.track .day-n b{display:grid;place-content:center;width:46px;height:46px;border-radius:50%;background:var(--azur);color:var(--azur-ink);font-size:1.1rem;position:relative;z-index:1}
+.track .day-n span{font-size:.7rem;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.track .body{display:grid;gap:6px;padding-top:6px}
+.track .body p{color:var(--muted)}
+
+/* faq */
+details{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:0 20px}
+details + details{margin-top:10px}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 0;font-weight:700;min-height:56px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--font-display);font-weight:800;font-size:1.5rem;color:var(--azur);line-height:1}
+details[open] summary::after{content:"\2212"}
+details p{color:var(--muted);padding:0 0 20px}
+
+/* cta final */
+.final{background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:38px 24px;display:grid;gap:18px;justify-items:start}
+.final h2{max-width:18ch}
+.final p{color:var(--muted);max-width:52ch}
+footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem;display:grid;gap:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Kebo <span>Coach</span></div>
+    <nav class="nav" aria-label="Sections">
+      <a href="#seances" data-tab="seances">Séances</a>
+      <a href="#cardio" data-tab="cardio">Cardio</a>
+      <a href="#diete" data-tab="diete">Diète</a>
+      <a href="#course" data-tab="course">Liste de course</a>
+      <a href="#jours" data-tab="jours">90 jours</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Plan 90 jours</p>
+        <h1>Perds du gras. <em>Garde ton muscle.</em></h1>
+        <p class="lead">Fini l'époque où il fallait choisir. Voici le plan complet de la vidéo : tes séances, ta diète et ta liste de course, étape par étape.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#seances" data-tab="seances">Voir mes séances</a>
+          <a class="btn btn-ghost" href="#diete" data-tab="diete">Calculer mes calories</a>
+        </div>
+        <div class="facts" role="list">
+          <div class="fact" role="listitem"><b class="tabular">90</b><span>jours</span></div>
+          <div class="fact" role="listitem"><b class="tabular">3</b><span>séances de muscu</span></div>
+          <div class="fact" role="listitem"><b class="tabular">2</b><span>séances de cardio</span></div>
+          <div class="fact" role="listitem"><b class="tabular">2 g</b><span>de protéines par kilo</span></div>
+        </div>
+      </div>
+
+    <div class="menu" id="menu">
+      <div class="menu-head"><p class="eyebrow">Ton plan complet</p><h2>Que veux-tu voir ?</h2><p>Touche une rubrique pour l'ouvrir.</p></div>
+      <div class="tiles" role="tablist" aria-label="Rubriques du plan">
+        <button class="tile" role="tab" type="button" id="tab-regles" data-tab="regles" aria-controls="regles" aria-selected="false" tabindex="0"><span class="tl">Les 3 règles</span><span class="ts">Le principe</span></button>
+        <button class="tile" role="tab" type="button" id="tab-seances" data-tab="seances" aria-controls="seances" aria-selected="false" tabindex="-1"><span class="tl">Séances</span><span class="ts">Lun, mer, ven</span></button>
+        <button class="tile" role="tab" type="button" id="tab-cardio" data-tab="cardio" aria-controls="cardio" aria-selected="false" tabindex="-1"><span class="tl">Cardio</span><span class="ts">Mar et jeu</span></button>
+        <button class="tile" role="tab" type="button" id="tab-diete" data-tab="diete" aria-controls="diete" aria-selected="false" tabindex="-1"><span class="tl">Diète</span><span class="ts">Calculateur</span></button>
+        <button class="tile" role="tab" type="button" id="tab-course" data-tab="course" aria-controls="course" aria-selected="false" tabindex="-1"><span class="tl">Courses</span><span class="ts">Liste à cocher</span></button>
+        <button class="tile" role="tab" type="button" id="tab-jours" data-tab="jours" aria-controls="jours" aria-selected="false" tabindex="-1"><span class="tl">Suivi</span><span class="ts">Jour 1 à 90</span></button>
+        <button class="tile" role="tab" type="button" id="tab-faq" data-tab="faq" aria-controls="faq" aria-selected="false" tabindex="-1"><span class="tl">FAQ</span><span class="ts">5 questions</span></button>
+      </div>
+    </div>
+
+      <div class="week" aria-label="Ta semaine type">
+        <div class="week-head"><h2>Ta semaine</h2><small>Même rythme pendant 90 jours</small></div>
+        <div class="day on"><span class="d">LUN</span><span class="n">Squat</span><span class="t">Muscu</span></div>
+        <div class="day"><span class="d">MAR</span><span class="n">Cardio facile</span><span class="t">20 à 40 min</span></div>
+        <div class="day on"><span class="d">MER</span><span class="n">Développé couché</span><span class="t">Muscu</span></div>
+        <div class="day"><span class="d">JEU</span><span class="n">Assault bike</span><span class="t">10 s / 20 s</span></div>
+        <div class="day on"><span class="d">VEN</span><span class="n">Soulevé de terre</span><span class="t">Muscu</span></div>
+        <div class="day rest"><span class="d">SAM</span><span class="n">Repos</span><span class="t"></span></div>
+        <div class="day rest"><span class="d">DIM</span><span class="n">Repos</span><span class="t"></span></div>
+        <div class="week-note"><span class="key"><i></i>Musculation</span><span class="key"><i class="o"></i>Cardio ou repos</span></div>
+      </div>
+    </div>
+
+    <div id="panels">
+      <nav class="sticky" id="sticky" aria-label="Changer de rubrique" hidden><div class="chips" id="chips"></div></nav>
+    <section class="panel" id="regles" role="tabpanel" aria-labelledby="tab-regles" tabindex="0" hidden>
+      <div class="sec-head">
+        <p class="eyebrow">Le principe</p>
+        <h2>Trois règles. Rien d'autre.</h2>
+        <p class="lead">Tu te débarrasses du gras en construisant de la masse musculaire. Pour ça, tu n'as besoin que de trois choses, tenues pendant 90 jours.</p>
+      </div>
+      <div class="grid c3">
+        <article class="card"><span class="num">1</span><h3>Tu soulèves lourd</h3><p>3 séances de musculation par semaine, construites autour d'un mouvement principal. C'est ce qui te fait garder ton muscle pendant que tu sèches.</p></article>
+        <article class="card"><span class="num">2</span><h3>Tu manges tes calories</h3><p>Ton poids en kilos fois 30, moins 300. Le même nombre tous les jours, sans exception. Le calculateur est dans la rubrique Diète.</p></article>
+        <article class="card"><span class="num">3</span><h3>Tu tiens tes protéines</h3><p>2 g de protéines par kilo de ton poids de corps actuel, tous les jours. C'est non négociable.</p></article>
+      </div>
+    </section>
+
+    <section class="panel" id="seances" role="tabpanel" aria-labelledby="tab-seances" tabindex="0" hidden>
+      <div class="sec-head">
+        <p class="eyebrow">Musculation, lundi, mercredi, vendredi</p>
+        <h2>Tes 3 séances</h2>
+        <p class="lead">Chaque séance suit le même schéma : un mouvement principal lourd, puis 3 exercices d'isolation proches de l'échec musculaire.</p>
+      </div>
+      <div class="grid c3">
+        <article class="card session">
+          <span class="tag">Lundi</span>
+          <h3>Jambes</h3>
+          <div class="main"><b>Squat</b><span>3 séries de 6, lourd</span></div>
+          <ol>
+            <li><div>Extension de jambes<div class="reps">3 séries de 8 à 12</div></div></li>
+            <li><div>Leg curl<div class="reps">3 séries de 8 à 12</div></div></li>
+            <li><div>Mollets debout<div class="reps">3 séries de 8 à 12</div></div></li>
+          </ol>
+        </article>
+        <article class="card session">
+          <span class="tag">Mercredi</span>
+          <h3>Haut du corps, poussée</h3>
+          <div class="main"><b>Développé couché</b><span>3 séries de 6, lourd</span></div>
+          <ol>
+            <li><div>Élévations latérales<div class="reps">3 séries de 8 à 12</div></div></li>
+            <li><div>Extension triceps, poulie haute à la corde<div class="reps">3 séries de 8 à 12</div></div></li>
+            <li><div>Écarté poulie ou haltères<div class="reps">3 séries de 8 à 12</div></div></li>
+          </ol>
+        </article>
+        <article class="card session">
+          <span class="tag">Vendredi</span>
+          <h3>Dos et arrière du corps</h3>
+          <div class="main"><b>Soulevé de terre</b><span>3 séries de 6, lourd</span></div>
+          <ol>
+            <li><div>Curl biceps haltères alterné<div class="reps">3 séries de 8 à 12</div></div></li>
+            <li><div>Oiseau aux haltères<div class="reps">3 séries de 8 à 12</div></div></li>
+            <li><div>Crunch à la poulie<div class="reps">3 séries de 8 à 12</div></div></li>
+          </ol>
+        </article>
+      </div>
+      <div class="rules">
+        <div class="rule"><b>12</b><p>Dès que tu atteins 12 répétitions sur chaque série d'un exercice d'isolation, tu augmentes la charge à la séance suivante. <span>Même logique sur le mouvement principal : quand tes 3 séries de 6 sont propres, tu ajoutes un peu de poids.</span></p></div>
+        <div class="rule"><b>Échec</b><p>Tu t'arrêtes proche de l'échec musculaire sur chaque série d'isolation. <span>Le dernier mouvement doit être dur, mais bien exécuté.</span></p></div>
+        <div class="rule"><b>Muscle</b><p>Ce n'est pas là que tu brûles ton gras. C'est là que tu gardes ton muscle pendant que tu sèches.</p></div>
+      </div>
+    </section>
+
+    <section class="panel" id="cardio" role="tabpanel" aria-labelledby="tab-cardio" tabindex="0" hidden>
+      <div class="sec-head">
+        <p class="eyebrow">Mardi et jeudi</p>
+        <h2>Ton cardio</h2>
+        <p class="lead">Deux séances courtes. Elles font monter ta dépense calorique et ta condition physique, sans abîmer ta récupération.</p>
+      </div>
+      <div class="grid c2">
+        <article class="card">
+          <span class="eyebrow">Mardi</span>
+          <div class="big">20 à 40 <em>min</em></div>
+          <h3>Effort facile</h3>
+          <p>Tu choisis la modalité. Celle que tu détestes le moins. Tu dois pouvoir parler sans être essoufflé.</p>
+          <div class="pill"><span>Vélo</span><span>Natation</span><span>Rameur</span><span>Marche rapide</span></div>
+        </article>
+        <article class="card">
+          <span class="eyebrow">Jeudi</span>
+          <div class="big">Assault bike <em>ou sprint</em></div>
+          <div class="interval">
+            <div><b class="tabular">10 s</b><span>à fond</span></div>
+            <div><b class="tabular">20 s</b><span>de repos</span></div>
+          </div>
+          <p>Tu répètes entre 8 et 10 séries. Tu finis ta séance en moins de 20 minutes.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="diete" role="tabpanel" aria-labelledby="tab-diete" tabindex="0" hidden>
+      <div class="sec-head">
+        <p class="eyebrow">La diète, 90 % de la perte de gras</p>
+        <h2>Calcule tes chiffres</h2>
+        <p class="lead">Entre ton poids actuel. Tu obtiens les calories à manger chaque jour et les protéines à viser. Pas de pesée à la gramme près : tu tiens ces deux nombres, tous les jours.</p>
+      </div>
+      <div class="calc">
+        <div class="fields">
+          <label for="poids">Ton poids de corps actuel, en kilos
+            <input id="poids" type="number" inputmode="decimal" min="40" max="250" step="0.5" value="80" autocomplete="off">
+            <small>Valeur d'exemple : remplace-la par la tienne.</small>
+          </label>
+          <label for="repas">Repas par jour
+            <select id="repas">
+              <option value="3">3 repas</option>
+              <option value="4" selected>4 repas</option>
+              <option value="5">5 repas</option>
+            </select>
+            <small>Sert à répartir tes protéines.</small>
+          </label>
+          <p class="hint" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="out" aria-live="polite">
+          <div class="res main">
+            <span class="k">Calories par jour</span>
+            <span class="v"><span id="kcal">2 100</span><small>kcal</small></span>
+            <span class="f">Poids en kilos × 30, moins 300.</span>
+          </div>
+          <div class="two">
+            <div class="res"><span class="k">Protéines par jour</span><span class="v"><span id="prot">160</span><small>g</small></span><span class="f">2 g par kilo.</span></div>
+            <div class="res"><span class="k">Par repas</span><span class="v"><span id="parRepas">40</span><small>g</small></span><span class="f" id="parRepasTxt">de protéines, sur 4 repas.</span></div>
+          </div>
+          <div class="res"><span class="k">Il te reste pour glucides et lipides</span><span class="v"><span id="reste">1 460</span><small>kcal</small></span><span class="f">Calories du jour moins 4 kcal par gramme de protéines. Répartis-les entre féculents, légumes, fruits et un peu de bon gras.</span></div>
+        </div>
+        <p class="calc-note">Tu manges ces calories tous les jours, week-end compris. Pèse-toi une fois par semaine, le matin, et garde le plan tel quel pendant au moins deux semaines avant de juger. Si tu as un souci de santé, demande l'avis d'un médecin avant de commencer.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="course" role="tabpanel" aria-labelledby="tab-course" tabindex="0" hidden>
+      <div class="sec-head">
+        <p class="eyebrow">À prendre au magasin</p>
+        <h2>Ta liste de course</h2>
+        <p class="lead">Simple et sans surprise. Coche au fur et à mesure, ta liste reste sur ton téléphone. Whey en option si tu as du mal à finir tes protéines.</p>
+      </div>
+      <div class="shop" id="shop">
+        <fieldset><legend>Protéines</legend>
+          <label class="chk"><input type="checkbox" data-k="poulet"><span>Poulet</span></label>
+          <label class="chk"><input type="checkbox" data-k="oeufs"><span>Oeufs</span></label>
+          <label class="chk"><input type="checkbox" data-k="skyr"><span>Skyr</span></label>
+          <label class="chk"><input type="checkbox" data-k="thon"><span>Thon</span></label>
+          <label class="chk"><input type="checkbox" data-k="steak"><span>Steak haché 5 %</span></label>
+        </fieldset>
+        <fieldset><legend>Féculents</legend>
+          <label class="chk"><input type="checkbox" data-k="riz"><span>Riz</span></label>
+          <label class="chk"><input type="checkbox" data-k="pdt"><span>Pommes de terre</span></label>
+          <label class="chk"><input type="checkbox" data-k="avoine"><span>Flocons d'avoine</span></label>
+          <label class="chk"><input type="checkbox" data-k="pain"><span>Pain complet</span></label>
+        </fieldset>
+        <fieldset><legend>Légumes</legend>
+          <label class="chk"><input type="checkbox" data-k="haricots"><span>Haricots verts</span></label>
+          <label class="chk"><input type="checkbox" data-k="brocolis"><span>Brocolis</span></label>
+          <label class="chk"><input type="checkbox" data-k="salade"><span>Salade</span></label>
+        </fieldset>
+        <fieldset><legend>Fruits</legend>
+          <label class="chk"><input type="checkbox" data-k="bananes"><span>Bananes</span></label>
+          <label class="chk"><input type="checkbox" data-k="fruitsrouges"><span>Fruits rouges</span></label>
+          <label class="chk"><input type="checkbox" data-k="pommes"><span>Pommes</span></label>
+        </fieldset>
+      </div>
+      <div class="shop-foot"><span id="count" class="tabular">0 sur 15 cochés</span><button class="linkbtn" id="reset" type="button">Tout décocher</button></div>
+    </section>
+
+    <section class="panel" id="jours" role="tabpanel" aria-labelledby="tab-jours" tabindex="0" hidden>
+      <div class="sec-head">
+        <p class="eyebrow">Du jour 1 au jour 90</p>
+        <h2>Ton suivi</h2>
+        <p class="lead">Le plan ne change pas. Ce qui change, c'est tes charges et ton corps. Fais le point quatre fois, avec les mêmes mesures à chaque fois.</p>
+      </div>
+      <ol class="track">
+        <li><div class="day-n"><b>1</b><span>Jour</span></div><div class="body"><h3>Le départ</h3><p>Pèse-toi le matin, mesure ta taille et prends 3 photos : face, profil, dos. Note tes charges de départ sur les 3 mouvements principaux.</p></div></li>
+        <li><div class="day-n"><b>30</b><span>Jour</span></div><div class="body"><h3>Premier point</h3><p>Même pesée, mêmes photos, même mesure de taille. Compare tes charges avec celles du jour 1.</p></div></li>
+        <li><div class="day-n"><b>60</b><span>Jour</span></div><div class="body"><h3>Deuxième point</h3><p>Tu refais le point. Si ton poids n'a pas bougé du tout depuis deux semaines, retire 100 kcal par jour et continue.</p></div></li>
+        <li><div class="day-n"><b>90</b><span>Jour</span></div><div class="body"><h3>Le résultat</h3><p>Dernier point : poids, taille, photos, charges. Mets tes photos du jour 1 et du jour 90 côte à côte.</p></div></li>
+      </ol>
+    </section>
+
+    <section class="panel" id="faq" role="tabpanel" aria-labelledby="tab-faq" tabindex="0" hidden>
+      <div class="sec-head">
+        <p class="eyebrow">Questions fréquentes</p>
+        <h2>Avant de te lancer</h2>
+      </div>
+      <details><summary>Je peux changer les jours de la semaine ?</summary><p>Oui. Garde la même répartition et au moins un jour de repos entre deux séances de musculation.</p></details>
+      <details><summary>Je rate une séance, je fais quoi ?</summary><p>Tu ne la rattrapes pas en doublant. Tu reprends le plan au jour suivant, comme prévu.</p></details>
+      <details><summary>Je n'ai pas d'assault bike.</summary><p>Fais le même format, 10 secondes à fond et 20 secondes de repos, en sprint à la course, sur un vélo ou sur un rameur.</p></details>
+      <details><summary>Quel poids je mets dans la formule ?</summary><p>Ton poids actuel, en kilos, de préférence le matin. Les calories et les protéines se calculent avec ce même poids.</p></details>
+      <details><summary>Je prends du poids ou je stagne, que faire ?</summary><p>Ne change rien pendant deux semaines. Vérifie que tu tiens tes calories et tes protéines tous les jours, week-end compris. Si rien ne bouge, retire 100 kcal par jour.</p></details>
+    </section>
+    </div>
+
+    <section class="contact" id="contact">
+      <div class="final">
+        <p class="eyebrow">Une question sur le plan ?</p>
+        <h2>Écris-moi en DM</h2>
+        <p>Si quelque chose n'est pas clair, envoie-moi un message sur Instagram. Je te réponds.</p>
+        <a class="btn btn-primary" href="https://www.instagram.com/kebo_coach/" target="_blank" rel="noopener">Ouvrir @kebo_coach</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand">Kebo <span>Coach</span></div>
+    <p>Ce plan est une information générale sur l'entraînement et la nutrition. Il ne remplace pas l'avis d'un médecin. En cas de douleur, de blessure ou de problème de santé, demande conseil à un professionnel avant de continuer.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var fmt=new Intl.NumberFormat("fr-FR");
+  var poids=document.getElementById("poids"), repas=document.getElementById("repas"), msg=document.getElementById("msg");
+  function $(id){return document.getElementById(id)}
+  function calc(){
+    var w=parseFloat(String(poids.value).replace(",","."));
+    var n=parseInt(repas.value,10);
+    if(!isFinite(w)||w<40||w>250){
+      msg.textContent="Entre un poids entre 40 et 250 kg.";
+      msg.className="hint err";
+      return;
+    }
+    msg.textContent=""; msg.className="hint";
+    var kcal=Math.round(w*30-300), prot=Math.round(w*2), reste=kcal-prot*4, par=Math.round(prot/n);
+    $("kcal").textContent=fmt.format(kcal);
+    $("prot").textContent=fmt.format(prot);
+    $("reste").textContent=fmt.format(reste);
+    $("parRepas").textContent=fmt.format(par);
+    $("parRepasTxt").textContent="de protéines, sur "+n+" repas.";
+  }
+  poids.addEventListener("input",calc);
+  repas.addEventListener("change",calc);
+  calc();
+
+  var boxes=Array.prototype.slice.call(document.querySelectorAll("#shop input[type=checkbox]"));
+  var KEY="kebo-plan90-course", saved={};
+  try{ saved=JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ saved={}; }
+  function count(){
+    var c=boxes.filter(function(b){return b.checked}).length;
+    $("count").textContent=c+" sur "+boxes.length+" cochés";
+  }
+  function save(){
+    var o={}; boxes.forEach(function(b){ if(b.checked) o[b.dataset.k]=1; });
+    try{ localStorage.setItem(KEY,JSON.stringify(o)); }catch(e){}
+  }
+  boxes.forEach(function(b){
+    b.checked=!!saved[b.dataset.k];
+    b.addEventListener("change",function(){ count(); save(); });
+  });
+  $("reset").addEventListener("click",function(){ boxes.forEach(function(b){b.checked=false}); count(); save(); });
+  count();
+
+  // rubriques
+  var tabs=Array.prototype.slice.call(document.querySelectorAll(".tile"));
+  var panels=Array.prototype.slice.call(document.querySelectorAll(".panel"));
+  var ids=tabs.map(function(t){return t.dataset.tab});
+  function show(id,scroll){
+    if(ids.indexOf(id)<0) return;
+    tabs.forEach(function(t){var on=t.dataset.tab===id; t.setAttribute("aria-selected",on?"true":"false"); t.tabIndex=on?0:-1;});
+    panels.forEach(function(p){p.hidden=(p.id!==id)});
+    try{ history.replaceState(null,"","#"+id); }catch(e){}
+    syncChips(id);
+    if(scroll){ document.getElementById(id).scrollIntoView({block:"start"}); }
+  }
+
+  // barre collante
+  var sticky=document.getElementById("sticky"), chipsBox=document.getElementById("chips"), chips={};
+  tabs.forEach(function(t){
+    var c=document.createElement("button"); c.type="button"; c.className="chip"; c.textContent=t.querySelector(".tl").textContent;
+    c.setAttribute("aria-current","false");
+    c.addEventListener("click",function(){ show(t.dataset.tab,true); });
+    chipsBox.appendChild(c); chips[t.dataset.tab]=c;
+  });
+  function syncChips(id){
+    sticky.hidden=false;
+    ids.forEach(function(k){ chips[k].setAttribute("aria-current",k===id?"true":"false"); });
+    var c=chips[id], box=chipsBox;
+    box.scrollLeft=Math.max(0,c.offsetLeft-(box.clientWidth-c.offsetWidth)/2);
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener("click",function(){ show(t.dataset.tab,true); });
+    t.addEventListener("keydown",function(e){
+      var j=-1;
+      if(e.key==="ArrowRight"||e.key==="ArrowDown") j=(i+1)%tabs.length;
+      else if(e.key==="ArrowLeft"||e.key==="ArrowUp") j=(i-1+tabs.length)%tabs.length;
+      else if(e.key==="Home") j=0; else if(e.key==="End") j=tabs.length-1;
+      if(j>=0){ e.preventDefault(); tabs[j].focus(); }
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("a[data-tab]"),function(a){
+    a.addEventListener("click",function(e){ e.preventDefault(); show(a.dataset.tab,true); });
+  });
+  panels.forEach(function(p,i){
+    var foot=document.createElement("div"); foot.className="panel-foot";
+    var up=document.createElement("button"); up.type="button"; up.className="btn"; up.textContent="\u2191 Retour au menu";
+    up.addEventListener("click",function(){ document.getElementById("menu").scrollIntoView({block:"start"}); });
+    foot.appendChild(up);
+    var nx=panels[i+1];
+    if(nx){
+      var b=document.createElement("button"); b.type="button"; b.className="btn next";
+      b.textContent="Suivant : "+document.getElementById("tab-"+nx.id).querySelector(".tl").textContent+" \u2192";
+      b.addEventListener("click",function(){ show(nx.id,true); });
+      foot.appendChild(b);
+    }
+    p.appendChild(foot);
+  });
+  var h=(location.hash||"").slice(1);
+  if(ids.indexOf(h)>=0) show(h,true);
+  window.addEventListener("hashchange",function(){ var x=(location.hash||"").slice(1); if(ids.indexOf(x)>=0) show(x,true); });
+})();
+</script>
+</body>
+</html>
